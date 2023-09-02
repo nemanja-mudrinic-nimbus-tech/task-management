@@ -1,0 +1,22 @@
+{
+  "name": "result",
+  "version": "0.0.1",
+  "description": "A more declaritive way to return something from a function",
+  "author": "nimbus-tech",
+  "private": false,
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "dependencies": {
+    "tsconfig": "*"
+  },
+  "scripts": {
+    "build": "etsc",
+    "prepare": "npm run build"
+  },
+  "devDependencies": {
+    "@types/node": "18.13.0",
+    "esbuild": "^0.19.2",
+    "esbuild-node-tsc": "^2.0.5",
+    "typescript": "5.2.2"
+  }
+}

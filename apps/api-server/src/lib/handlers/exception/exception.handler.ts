@@ -3,6 +3,9 @@ import { NextFunction, Request, Response } from "express";
 import { logEvent } from "../../utils/logger/logger";
 import { Severity } from "../../utils/enum/severity";
 import { AppRequest } from "../../types/request";
+import { BadRequestException } from "../../exceptions/bad-request.exception";
+import { NotFoundException } from "../../exceptions/not-found.exception";
+import { ValidationException } from "../../exceptions/validation.exception";
 
 export const errorHandler = (
   err: InternalException,
@@ -10,9 +13,6 @@ export const errorHandler = (
   res: Response,
   _: NextFunction,
 ) => {
-  console.log(123);
-  console.log(421, err);
-
   // check status of error
   logEvent("error", undefined, {
     exception: err,
@@ -21,11 +21,21 @@ export const errorHandler = (
     severity: Severity.Error,
   });
 
-  // format message
+  if (
+    err instanceof BadRequestException ||
+    err instanceof NotFoundException ||
+    err instanceof ValidationException
+  ) {
+    return res.status(err.status).send({
+      message: err.message || err.detail || err.title,
+      code: err.code,
+    });
+  }
 
-  res.send({
+  // TODO: log to sentry
+
+  return res.send({
     message: "Something went wrong",
+    code: "server-error",
   });
-
-  // log to sentry
 };
