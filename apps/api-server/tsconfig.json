@@ -18,10 +18,14 @@
     "experimentalDecorators": true,
     "strictPropertyInitialization": false,
     "emitDecoratorMetadata": true,
-    "typeRoots": ["./node_modules/@types"],
+    "typeRoots": ["./node_modules/@types", "../../node_modules/@types"],
     "noEmit": false,
     "esModuleInterop": true,
     "baseUrl": "."
   },
-  "exclude": ["node_modules", "cdk.out"]
+  "exclude": [
+    "node_modules",
+    "!node_modules/result",
+    "../../node_modules/@types"
+  ]
 }
