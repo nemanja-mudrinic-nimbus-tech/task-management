@@ -1,0 +1,14 @@
+{
+  "login": {
+    "welcome": "Welcome to Task Management",
+    "email": "Email",
+    "password": "Password"
+  },
+  "error": {
+    "wrongCredentials": "Wrong Credentials",
+    "somethingWentWrong": "Oops! Something went wrong."
+  },
+  "global": {
+    "missingTranslation": "Translation missing"
+  }
+}
