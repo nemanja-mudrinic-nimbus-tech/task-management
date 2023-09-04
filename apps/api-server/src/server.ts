@@ -9,6 +9,7 @@ import {
 } from "./lib/handlers/request/request.handler";
 import { configureRoutes } from "./config/routes/configure-routes";
 import { openDbConnection } from "./config/db/config";
+import { authenticateToken } from "./lib/handlers/jwt/jwt.handler";
 
 configDotenv();
 
@@ -21,6 +22,7 @@ const app = express();
   app.use(cors());
   app.use(express.json());
   app.use(requestHandler);
+  app.use(authenticateToken);
 
   configureRoutes(app);
   app.use(responseHandler);

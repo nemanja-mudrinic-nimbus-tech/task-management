@@ -1,12 +1,22 @@
 import { IAuthService } from "./auth.service.interface";
 import { RegistrationRequest } from "../dto/request/registration/registration.request";
 import { LoginRequest } from "../dto/request/login/login.request";
-import { LoginResponse } from "../dto/response/login/login.response";
-import { AppPromise, AppResult } from "../../../lib/types/app-result";
+import {
+  LoginResponse,
+  mapUserToUserLoginResponse,
+} from "../dto/response/login/login.response";
+import { AppPromise } from "../../../lib/types/app-result";
 import { Failure, Success } from "result";
 import { BadRequestException } from "../../../lib/exceptions/bad-request.exception";
+import { IUserRepository } from "../repository/user/user.repository.interface";
+import { hashSync, compareSync } from "bcrypt";
+import jwt from "jsonwebtoken";
+import { IUser } from "../../../config/db/schemas/user.schema";
 
 class AuthService implements IAuthService {
+  constructor(private userRepository: IUserRepository) {
+    this.userRepository = userRepository;
+  }
   public async signUp(
     registrationRequest: RegistrationRequest,
   ): AppPromise<Promise<void>> {
@@ -16,6 +26,17 @@ class AuthService implements IAuthService {
 
     if (userResult.isSuccess()) {
       return Failure.create(new BadRequestException("User already exist"));
+    }
+
+    const generatePassword = hashSync(registrationRequest.password, 10);
+
+    const creatingResults = await this.userRepository.createUser({
+      username: registrationRequest.username,
+      password: generatePassword,
+    });
+
+    if (!creatingResults.isSuccess()) {
+      throw creatingResults.error;
     }
 
     return Success.create(Promise.resolve());
@@ -30,31 +51,35 @@ class AuthService implements IAuthService {
 
     const user = userResult.value;
 
-    if (loginRequest.password !== user.password) {
+    if (!compareSync(loginRequest.password, user.password)) {
       return Failure.create(new BadRequestException("bad credentials"));
     }
 
-    return Success.create({
-      user: {
-        id: "124",
-        username: "dummy@test.com",
+    // 1 hour token
+    const accessToken = jwt.sign(
+      {
+        username: user.username,
+        id: user._id,
       },
-      accessToken: "dummyToken",
-    });
-  }
-  private async getUserByUsername(
-    username: string,
-  ): AppPromise<{ id: number; username: string; password: string }> {
-    if (username !== "exist@test.com") {
-      return Failure.create(new BadRequestException("User already exist"));
-    }
+      process.env.JWT_SECRET! || "testSecret123",
+      {
+        expiresIn: "3600s",
+      },
+    );
 
     return Success.create({
-      id: 1,
-      username,
-      password: "password",
+      user: mapUserToUserLoginResponse(user),
+      accessToken,
     });
+  }
+  private async getUserByUsername(username: string): AppPromise<IUser> {
+    const userResults = await this.userRepository.findUserByUsername(username);
+    if (!userResults.isSuccess()) {
+      return Failure.create(new BadRequestException("User does not exist"));
+    }
+
+    return Success.create(userResults.value);
   }
 }
 
-export default new AuthService();
+export default AuthService;

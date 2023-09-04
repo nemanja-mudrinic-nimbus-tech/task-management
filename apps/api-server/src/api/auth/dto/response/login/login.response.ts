@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { extendZodWithOpenApi } from "@asteasolutions/zod-to-openapi";
+import { IUser } from "../../../../../config/db/schemas/user.schema";
 
 extendZodWithOpenApi(z);
 export const loginResponseSchema = z
@@ -13,3 +14,9 @@ export const loginResponseSchema = z
   .openapi("LoginResponse");
 
 export type LoginResponse = z.infer<typeof loginResponseSchema>;
+
+// TODO: Move mappers to utils or somewhere else
+export const mapUserToUserLoginResponse = (user: IUser) => ({
+  id: user._id,
+  username: user.username,
+});

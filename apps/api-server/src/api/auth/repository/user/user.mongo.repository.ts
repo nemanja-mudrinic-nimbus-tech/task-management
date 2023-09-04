@@ -4,6 +4,7 @@ import { IUserRepository } from "./user.repository.interface";
 import { AppPromise } from "../../../../lib/types/app-result";
 import { Failure, Success } from "result";
 import { BadRequestException } from "../../../../lib/exceptions/bad-request.exception";
+import { ServerInternalException } from "../../../../lib/exceptions/server-internal.exception";
 
 class UserMongoRepository
   extends MongoRepository<IUser>
@@ -12,13 +13,19 @@ class UserMongoRepository
   constructor() {
     super(User);
   }
-  async createUser(): AppPromise<IUser> {
-    const createdUser = await this.model.create({
-      username: "nemanj12a@email.com",
-      password: `${new Date().getTime()}-123`,
-    });
+  async createUser(user: Partial<IUser>): AppPromise<IUser> {
+    try {
+      const createdUser = await this.model.create({
+        username: user.username,
+        password: user.password,
+      });
 
-    return Success.create(createdUser);
+      return Success.create(createdUser);
+    } catch (error) {
+      return Failure.create(
+        new ServerInternalException((error as Error)?.message || undefined),
+      );
+    }
   }
 
   public async findUserByUsername(username: string): AppPromise<IUser> {
@@ -28,7 +35,7 @@ class UserMongoRepository
       return Failure.create(new BadRequestException("User not found"));
     }
 
-    return Success.create({ username: "nemanja", password: "123", tasks: [] });
+    return Success.create(user);
   }
 }
 

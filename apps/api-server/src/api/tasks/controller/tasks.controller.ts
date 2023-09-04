@@ -1,6 +1,5 @@
 import { NextFunction, Request, Response, Router } from "express";
 
-import taskService from "../services/tasks.service";
 import { asyncHandler } from "../../../lib/handlers/async-handler/async.handler";
 import {
   CreateTaskRequest,
@@ -20,46 +19,31 @@ import {
   IdPathRequest,
   idPathRequestSchema,
 } from "../../../lib/dto/request/id-path.request";
+import TasksService from "../services/tasks.service";
+import TaskMongoRepository from "../repository/task/task.mongo.repository";
+import { AppRequest } from "../../../lib/types/request";
 
 const router = Router({ mergeParams: true });
 
-router.post(
-  "/tasks",
-  asyncHandler(
-    async (
-      req: Request<{}, void, CreateTaskRequest, {}>,
-      res: Response,
-      _: NextFunction,
-    ) => {
-      const createTaskResult = await taskService.createTask(req.body);
-
-      if (createTaskResult.isFailure()) {
-        throw createTaskResult.error;
-      }
-
-      res.status(201).send(createTaskResult.value);
-    },
-    { body: createTaskRequestRequestSchema },
-  ),
-);
+const taskService = new TasksService(TaskMongoRepository);
 
 router.get(
-  "/tasks",
+  "/tasks/:id",
   asyncHandler(
     async (
-      req: Request<{}, TaskListResponse, {}, GetTaskListQueryRequest>,
+      req: AppRequest<IdPathRequest, {}, {}, {}>,
       res: Response,
       _: NextFunction,
     ) => {
-      const getTasksResult = await taskService.getTasks(req.query);
+      const getTaskResult = await taskService.getTask(req.params.id);
 
-      if (getTasksResult.isFailure()) {
-        throw getTasksResult.error;
+      if (getTaskResult.isFailure()) {
+        throw getTaskResult.error;
       }
 
-      res.status(200).send(getTasksResult.value);
+      res.status(204).send(getTaskResult.value);
     },
-    { query: getTaskListQueryRequestSchema },
+    { params: idPathRequestSchema },
   ),
 );
 
@@ -67,7 +51,7 @@ router.patch(
   "/tasks/:id",
   asyncHandler(
     async (
-      req: Request<IdPathRequest, TaskResponse, UpdateTaskRequest, {}>,
+      req: AppRequest<IdPathRequest, TaskResponse, UpdateTaskRequest, {}>,
       res: Response,
       _: NextFunction,
     ) => {
@@ -90,7 +74,7 @@ router.delete(
   "/tasks/:id",
   asyncHandler(
     async (
-      req: Request<IdPathRequest, {}, {}, {}>,
+      req: AppRequest<IdPathRequest, {}, {}, {}>,
       res: Response,
       _: NextFunction,
     ) => {
@@ -106,23 +90,46 @@ router.delete(
   ),
 );
 
-router.get(
-  "/tasks/:id",
+router.post(
+  "/tasks",
   asyncHandler(
     async (
-      req: Request<IdPathRequest, {}, {}, {}>,
+      req: AppRequest<{}, void, CreateTaskRequest, {}>,
       res: Response,
       _: NextFunction,
     ) => {
-      const getTaskResult = await taskService.getTask(req.params.id);
+      const createTaskResult = await taskService.createTask(
+        req.body,
+        req.userId!,
+      );
 
-      if (getTaskResult.isFailure()) {
-        throw getTaskResult.error;
+      if (createTaskResult.isFailure()) {
+        throw createTaskResult.error;
       }
 
-      res.status(204).send(getTaskResult.value);
+      return res.send(createTaskResult.value);
     },
-    { params: idPathRequestSchema },
+    { body: createTaskRequestRequestSchema },
+  ),
+);
+
+router.get(
+  "/tasks",
+  asyncHandler(
+    async (
+      req: AppRequest<{}, TaskListResponse, {}, GetTaskListQueryRequest>,
+      res: Response,
+      _: NextFunction,
+    ) => {
+      const getTasksResult = await taskService.getTasks(req.query, req.userId!);
+
+      if (getTasksResult.isFailure()) {
+        throw getTasksResult.error;
+      }
+
+      res.status(200).send(getTasksResult.value);
+    },
+    { query: getTaskListQueryRequestSchema },
   ),
 );
 

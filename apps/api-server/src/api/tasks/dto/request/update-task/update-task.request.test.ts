@@ -1,4 +1,5 @@
 import { updateTaskRequestRequestSchema } from "./update-task.request";
+import {TaskPriority} from "../../../../../lib/utils/enum/task-priority.enum";
 
 describe("updateTaskRequestRequestSchema", () => {
   it("should validate correct data", () => {
@@ -6,7 +7,7 @@ describe("updateTaskRequestRequestSchema", () => {
       title: "Task Title",
       description: "Task Description",
       done: true,
-      priority: "HIGH",
+      priority: TaskPriority.High,
     };
 
     const validationResult =

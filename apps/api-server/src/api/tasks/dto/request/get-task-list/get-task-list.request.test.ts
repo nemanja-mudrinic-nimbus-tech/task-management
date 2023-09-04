@@ -1,4 +1,5 @@
 import { getTaskListQueryRequestSchema } from "./get-task-list.request";
+import { TaskPriority } from "../../../../../lib/utils/enum/task-priority.enum";
 
 describe("getTaskListQueryRequestSchema", () => {
   it("should validate correct data", () => {
@@ -6,7 +7,7 @@ describe("getTaskListQueryRequestSchema", () => {
       title: "Task Title",
       createdAt: new Date(),
       done: true,
-      priority: "HIGH",
+      priority: TaskPriority.High,
       page: 1,
       size: 10,
     };

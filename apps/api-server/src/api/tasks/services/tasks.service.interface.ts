@@ -6,12 +6,18 @@ import { TaskListResponse } from "../dto/response/task-list/task-list.response";
 import { GetTaskListQueryRequest } from "../dto/request/get-task-list/get-task-list.request";
 
 export interface ITasksService {
-  createTask(createTaskRequest: CreateTaskRequest): AppPromise<TaskResponse>;
+  createTask(
+    createTaskRequest: CreateTaskRequest,
+    userId: string,
+  ): AppPromise<TaskResponse>;
   updateTask(
     taskId: string,
     updateTaskRequest: UpdateTaskRequest,
   ): AppPromise<TaskResponse>;
   deleteTask(taskId: string): AppPromise<Promise<void>>;
-  getTasks(taskFilters: GetTaskListQueryRequest): AppPromise<TaskListResponse>;
+  getTasks(
+    taskFilters: GetTaskListQueryRequest,
+    userId: string,
+  ): AppPromise<TaskListResponse>;
   getTask(taskId: string): AppPromise<TaskResponse>;
 }

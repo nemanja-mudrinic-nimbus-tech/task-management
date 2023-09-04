@@ -1,4 +1,5 @@
 import { taskResponseSchema } from "./task.response";
+import { TaskPriority } from "../../../../../lib/utils/enum/task-priority.enum";
 
 describe("taskResponseSchema", () => {
   it("should validate correct data", () => {
@@ -9,7 +10,7 @@ describe("taskResponseSchema", () => {
       done: true,
       createdAt: new Date(),
       updatedAt: new Date(),
-      priority: "HIGH",
+      priority: TaskPriority.High,
     };
 
     const validationResult = taskResponseSchema.safeParse(validData);
@@ -25,7 +26,7 @@ describe("taskResponseSchema", () => {
       done: "maybe",
       createdAt: new Date(),
       updatedAt: new Date(),
-      priority: "HIGH",
+      priority: TaskPriority.High,
     };
 
     const validationResult = taskResponseSchema.safeParse(invalidDoneData);

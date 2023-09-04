@@ -1,11 +1,12 @@
 import { createTaskRequestRequestSchema } from "./create-task.request";
+import {TaskPriority} from "../../../../../lib/utils/enum/task-priority.enum";
 
 describe("createTaskRequestRequestSchema", () => {
   it("should validate correct data", () => {
     const validData = {
       title: "Some Task Title",
       description: "Some Task Description",
-      priority: "HIGH",
+      priority: TaskPriority.High,
     };
 
     const validationResult =
