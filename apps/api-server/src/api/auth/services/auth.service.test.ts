@@ -1,10 +1,30 @@
 import { BadRequestException } from "../../../lib/exceptions/bad-request.exception";
 import AuthService from "./auth.service";
+import { IUserRepository } from "../repository/user/user.repository.interface";
+import { Failure, Success } from "result";
+// TODO: mock
+import { hashSync } from "bcrypt";
+
+jest.mock('jsonwebtoken');
+import jwt from 'jsonwebtoken'
+
+const mockedUserRepository = {
+  createUser: jest.fn(),
+  findUserByUsername: jest.fn(),
+};
+
+const authService = new AuthService(
+  mockedUserRepository as unknown as IUserRepository,
+);
 
 describe("AuthService", () => {
   describe("signUp", () => {
     it("should return error if user already exists", async () => {
-      const result = await AuthService.signUp({
+      mockedUserRepository.findUserByUsername.mockResolvedValueOnce(
+        Success.create({ username: "exist@test.com" }),
+      );
+
+      const result = await authService.signUp({
         username: "exist@test.com",
         password: "anyPassword",
       });
@@ -16,7 +36,16 @@ describe("AuthService", () => {
     });
 
     it("should sign up successfully if user does not exist", async () => {
-      const result = await AuthService.signUp({
+      mockedUserRepository.findUserByUsername.mockResolvedValueOnce(
+        Failure.create(new BadRequestException("User not found")),
+      );
+      mockedUserRepository.createUser.mockResolvedValueOnce(
+        Success.create({
+          username: "test",
+        }),
+      );
+
+      const result = await authService.signUp({
         username: "newuser@test.com",
         password: "anyPassword",
       });
@@ -26,10 +55,15 @@ describe("AuthService", () => {
 
   describe("signIn", () => {
     it("should return error for non-existing user", async () => {
-      const result = await AuthService.signIn({
+      mockedUserRepository.findUserByUsername.mockResolvedValueOnce(
+        Failure.create(new BadRequestException("User not found")),
+      );
+
+      const result = await authService.signIn({
         username: "nonexist@test.com",
         password: "anyPassword",
       });
+
       expect(result.isFailure()).toBeTruthy();
       if (result.isFailure()) {
         expect(result.error).toBeInstanceOf(BadRequestException);
@@ -37,10 +71,15 @@ describe("AuthService", () => {
     });
 
     it("should return error for incorrect password", async () => {
-      const result = await AuthService.signIn({
+      mockedUserRepository.findUserByUsername.mockResolvedValueOnce(
+        Success.create({ username: "exist@test.com", password: "123" }),
+      );
+
+      const result = await authService.signIn({
         username: "exist@test.com",
         password: "wrongPassword",
       });
+
       expect(result.isFailure()).toBeTruthy();
       if (result.isFailure()) {
         expect(result.error).toBeInstanceOf(BadRequestException);
@@ -48,7 +87,15 @@ describe("AuthService", () => {
     });
 
     it("should sign in successfully with correct credentials", async () => {
-      const result = await AuthService.signIn({
+      mockedUserRepository.findUserByUsername.mockResolvedValueOnce(
+        Success.create({
+          username: "exist@test.com",
+          password: hashSync("password", 10),
+        }),
+      );
+      (jwt.sign as jest.Mock).mockReturnValue('dummyToken');
+
+      const result = await authService.signIn({
         username: "exist@test.com",
         password: "password",
       });
@@ -56,7 +103,7 @@ describe("AuthService", () => {
       expect(result.isSuccess()).toBeTruthy();
       if (result.isSuccess()) {
         expect(result.value.accessToken).toBe("dummyToken");
-        expect(result.value.user.username).toBe("dummy@test.com");
+        expect(result.value.user.username).toBe("exist@test.com");
       }
     });
   });

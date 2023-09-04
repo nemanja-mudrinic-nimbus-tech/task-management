@@ -61,7 +61,7 @@ class AuthService implements IAuthService {
         username: user.username,
         id: user._id,
       },
-      process.env.JWT_SECRET!,
+      process.env.JWT_SECRET! || "testSecret123",
       {
         expiresIn: "3600s",
       },
