@@ -20,9 +20,7 @@ export const asyncHandler = (
   }
 
   requestPipe.push((req: Request, res: Response, next: NextFunction) =>
-    Promise.resolve(fn(req, res, next))
-      .then(next)
-      .catch(next),
+    Promise.resolve(fn(req, res, next)).catch(next),
   );
 
   return [...requestPipe, errorHandler];

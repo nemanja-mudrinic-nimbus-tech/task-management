@@ -6,6 +6,8 @@ import { Failure, Success } from "result";
 import { TaskPriority } from "../../../../lib/utils/enum/task-priority.enum";
 import { BadRequestException } from "../../../../lib/exceptions/bad-request.exception";
 import { ServerInternalException } from "../../../../lib/exceptions/server-internal.exception";
+import mongoose from "mongoose";
+import { User } from "../../../../config/db/schemas/user.schema";
 
 class TaskMongoRepository
   extends MongoRepository<ITask>
@@ -26,8 +28,13 @@ class TaskMongoRepository
         title: task.title,
         description: task.description || "",
         priority: task.priority || TaskPriority.High,
-        user: task.userId,
+        userId: new mongoose.Types.ObjectId(task.userId),
       });
+
+      await User.updateOne(
+        { _id: task.userId },
+        { $push: { tasks: createdTask._id } },
+      );
 
       return Success.create(createdTask);
     } catch (error) {

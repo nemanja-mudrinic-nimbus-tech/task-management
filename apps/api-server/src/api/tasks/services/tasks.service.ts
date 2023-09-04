@@ -8,11 +8,10 @@ import {
 } from "../dto/response/task/task.response";
 import { GetTaskListQueryRequest } from "../dto/request/get-task-list/get-task-list.request";
 import { TaskListResponse } from "../dto/response/task-list/task-list.response";
-import {Failure, Success} from "result";
+import { Failure, Success } from "result";
 import { TaskPriority } from "../../../lib/utils/enum/task-priority.enum";
 import { ITask } from "../../../config/db/schemas/task.schema";
 import { ITaskRepository } from "../repository/task/task.repository.interface";
-import TaskMongoRepository from "../repository/task/task.mongo.repository";
 
 class TasksService implements ITasksService {
   constructor(private taskRepository: ITaskRepository) {
@@ -26,9 +25,9 @@ class TasksService implements ITasksService {
       title: createTaskRequest.title,
       description: createTaskRequest.description || "",
       priority: createTaskRequest.priority || TaskPriority.High,
-      user: userId,
+      userId,
     });
-
+    console.log(createdTaskResult);
     if (createdTaskResult.isSuccess()) {
       return Success.create(mapTaskToTaskResponse(createdTaskResult.value));
     }
@@ -57,7 +56,7 @@ class TasksService implements ITasksService {
     taskFilters: GetTaskListQueryRequest,
     userId: string,
   ): AppPromise<TaskListResponse> {
-    const query: Partial<ITask> = { user: userId }; // Always filter by user
+    const query: Partial<ITask> = { userId }; // Always filter by user
 
     if (taskFilters.title) {
       query.title = new RegExp(taskFilters.title, "i"); // Case-insensitive substring match

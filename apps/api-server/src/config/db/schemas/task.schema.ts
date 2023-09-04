@@ -17,7 +17,7 @@ const TaskSchema = new Schema(
     },
     dueDate: { type: Date, default: Date.now },
     done: { type: Boolean, required: true, default: false },
-    user: { type: Schema.Types.ObjectId, ref: "User" },
+    userId: { type: Schema.Types.ObjectId, ref: "User", default: null },
   },
   { timestamps: true },
 );
@@ -28,7 +28,7 @@ export type ITask = {
   priority: TaskPriority;
   dueDate: Date;
   done: boolean;
-  user: IUser["_id"] | IUser;
+  userId: IUser["_id"] | IUser;
 } & mongoose.Document["_id"];
 
 type TaskDocument = ITask & mongoose.Document;
