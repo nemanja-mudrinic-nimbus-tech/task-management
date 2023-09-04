@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { extendZodWithOpenApi } from "@asteasolutions/zod-to-openapi";
+import { TaskPriority } from "../../../../../lib/utils/enum/task-priority.enum";
 
 extendZodWithOpenApi(z);
 export const taskResponseSchema = z
@@ -10,7 +11,7 @@ export const taskResponseSchema = z
     done: z.boolean(),
     createdAt: z.date(),
     updatedAt: z.date(),
-    priority: z.string(),
+    priority: z.nativeEnum(TaskPriority),
   })
   .openapi("TaskResponse");
 

@@ -7,6 +7,8 @@ import { GetTaskListQueryRequest } from "../dto/request/get-task-list/get-task-l
 import { TaskListResponse } from "../dto/response/task-list/task-list.response";
 import { Failure, Success } from "result";
 import { BadRequestException } from "../../../lib/exceptions/bad-request.exception";
+import { TaskPriority } from "../../../lib/utils/enum/task-priority.enum";
+import { ITask } from "../../../config/db/schemas/task.schema";
 
 class TasksService implements ITasksService {
   public async createTask(
@@ -20,7 +22,7 @@ class TasksService implements ITasksService {
       done: false,
       createdAt: new Date(),
       updatedAt: new Date(),
-      priority: "LOW",
+      priority: TaskPriority.Low,
       ...createTaskRequest,
     });
   }
@@ -51,7 +53,7 @@ class TasksService implements ITasksService {
   public async getTasks(
     taskFilters: GetTaskListQueryRequest,
   ): AppPromise<TaskListResponse> {
-    if (taskFilters.priority === "LOW") {
+    if (taskFilters.priority === TaskPriority.Low) {
       return Success.create({
         count: 0,
         items: [],
@@ -68,7 +70,7 @@ class TasksService implements ITasksService {
           title: "asfas",
           createdAt: new Date(),
           updatedAt: new Date(),
-          priority: "LOW",
+          priority: TaskPriority.Low,
         },
       ],
     });
@@ -90,15 +92,7 @@ class TasksService implements ITasksService {
     return Success.create({ ...taskResult.value, ...updateTaskRequest });
   }
 
-  private async getTaskById(taskId: string): AppPromise<{
-    id: string;
-    title: string;
-    description: string;
-    done: boolean;
-    createdAt: Date;
-    updatedAt: Date;
-    priority: string;
-  }> {
+  private async getTaskById(taskId: string): AppPromise<ITask> {
     if (taskId === "1") {
       return Failure.create(
         new BadRequestException(
@@ -108,13 +102,13 @@ class TasksService implements ITasksService {
     }
 
     return Success.create({
-      id: "123",
+      _id: "123",
       description: "des",
       done: false,
       title: "asfas",
       createdAt: new Date(),
       updatedAt: new Date(),
-      priority: "LOW",
+      priority: TaskPriority.Low,
     });
   }
 }

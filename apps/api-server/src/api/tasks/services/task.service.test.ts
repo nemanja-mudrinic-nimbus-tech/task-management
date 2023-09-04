@@ -1,5 +1,6 @@
 import { BadRequestException } from "../../../lib/exceptions/bad-request.exception";
 import TasksService from "./tasks.service";
+import { TaskPriority } from "../../../lib/utils/enum/task-priority.enum";
 
 describe("TasksService", () => {
   describe("createTask", () => {
@@ -67,7 +68,7 @@ describe("TasksService", () => {
 
     it("should filter tasks", async () => {
       const filters = {
-        priority: "LOW",
+        priority: TaskPriority.Low,
       };
 
       const result = await TasksService.getTasks(filters);

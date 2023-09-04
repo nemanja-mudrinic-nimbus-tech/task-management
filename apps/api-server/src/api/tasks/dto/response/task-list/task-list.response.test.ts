@@ -1,4 +1,5 @@
 import { taskListResponseSchema } from "./task-list.response";
+import { TaskPriority } from "../../../../../lib/utils/enum/task-priority.enum";
 
 describe("taskListResponseSchema", () => {
   it("should validate correct data", () => {
@@ -11,7 +12,7 @@ describe("taskListResponseSchema", () => {
           done: true,
           createdAt: new Date(),
           updatedAt: new Date(),
-          priority: "HIGH",
+          priority: TaskPriority.High,
         },
       ],
       count: 1,
@@ -31,7 +32,7 @@ describe("taskListResponseSchema", () => {
           description: "Task Description",
           createdAt: new Date(),
           updatedAt: new Date(),
-          priority: "HIGH",
+          priority: TaskPriority.High,
         },
       ],
       count: 1,
