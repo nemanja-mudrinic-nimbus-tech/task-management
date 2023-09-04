@@ -1,5 +1,5 @@
 import { InternalException } from "./internal.exception";
-import { Severity } from "../utils/enum/severity";
+import { Severity } from "../utils/enum/severity.enum";
 
 export class ValidationException extends InternalException {
   constructor(detail?: string, meta?: unknown) {

@@ -8,12 +8,14 @@ import {
   responseHandler,
 } from "./lib/handlers/request/request.handler";
 import { configureRoutes } from "./config/routes/configure-routes";
+import { openDbConnection } from "./config/db/config";
 
 configDotenv();
 
 const app = express();
 
 (async () => {
+  await openDbConnection();
   configureSwagger(app);
 
   app.use(cors());

@@ -1,7 +1,7 @@
 import { InternalException } from "../../exceptions/internal.exception";
 import { NextFunction, Request, Response } from "express";
 import { logEvent } from "../../utils/logger/logger";
-import { Severity } from "../../utils/enum/severity";
+import { Severity } from "../../utils/enum/severity.enum";
 import { AppRequest } from "../../types/request";
 import { BadRequestException } from "../../exceptions/bad-request.exception";
 import { NotFoundException } from "../../exceptions/not-found.exception";
