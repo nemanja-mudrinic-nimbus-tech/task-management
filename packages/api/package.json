@@ -1,0 +1,20 @@
+{
+  "name": "@task-management/api",
+  "version": "0.0.2",
+  "description": "Generated API client (OpenAPI)",
+  "main": "src/api/index.ts",
+  "types": "src/api/index.ts",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "generate": "node downloadOpenApiSchema.mjs && openapi --input openapi.json --output src/api --useUnionTypes --client axios --indent 2 --postfixServices Api --name TaskManagementApi && rm openapi.json"
+  },
+  "devDependencies": {
+    "axios": "^1.4.0",
+    "dotenv": "^16.3.1",
+    "openapi-typescript-codegen": "^0.25.0"
+  },
+  "dependencies": {
+    "axios-retry": "^3.6.0"
+  }
+}

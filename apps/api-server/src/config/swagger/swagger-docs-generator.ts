@@ -1,7 +1,7 @@
 import { OpenApiGeneratorV3 } from "@asteasolutions/zod-to-openapi";
 import * as yaml from "yaml";
 import fs from "fs";
-import { Express } from "express";
+import { Express, Request, Response } from "express";
 import swaggerUi from "swagger-ui-express";
 
 import { registry } from "./swagger-registry";
@@ -45,6 +45,10 @@ export const configureSwagger = (app: Express) => {
     encoding: "utf-8",
   });
   const swaggerDocument = yaml.parse(file);
+
+  app.use(`${ROUTE_API_V1}/docs-json`, (req: Request, res: Response) => {
+    res.send(swaggerDocument);
+  });
 
   app.use(
     `${ROUTE_API_V1}/docs`,
