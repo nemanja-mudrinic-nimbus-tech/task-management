@@ -12,7 +12,9 @@ export interface AppState {
 export const useAppState = create<AppState>()(
   devtools(
     immer((set) => ({
-      user: undefined,
+      user: localStorage.getItem("user")
+        ? JSON.parse(localStorage.getItem("user") as string)
+        : undefined || undefined,
 
       setUser: (user) =>
         set((state) => {

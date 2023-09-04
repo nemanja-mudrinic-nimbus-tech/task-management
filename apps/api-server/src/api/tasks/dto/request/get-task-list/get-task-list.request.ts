@@ -5,11 +5,13 @@ import { TaskPriority } from "../../../../../lib/utils/enum/task-priority.enum";
 
 extendZodWithOpenApi(z);
 
+const StringBoolean = z.string().transform((val) => val === "true");
+
 const getTaskListQuerySchema = z
   .object({
     title: z.string().optional(),
     createdAt: z.date().optional(),
-    done: z.boolean().optional(),
+    done: z.union([z.boolean(), StringBoolean]).optional(),
     priority: z.nativeEnum(TaskPriority).optional(),
   })
   .openapi("GetTaskListQueryRequest", {

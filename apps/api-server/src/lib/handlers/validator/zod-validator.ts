@@ -24,6 +24,7 @@ export const validateRequest = (schemas: ValidatedRequestSchemas) => {
         req.query = schemas.query.parse(req.query);
       }
     } catch (error: Error | unknown) {
+      console.log(error)
       throw new ValidationException("Validation error", {
         validationError: (error as Error)?.message || undefined,
       });

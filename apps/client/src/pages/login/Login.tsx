@@ -31,6 +31,7 @@ const LoginForm = () => {
     },
     onSuccess: (result) => {
       setUser(result.user);
+      localStorage.setItem("user", JSON.stringify(result.user));
       setAccessToken(result.accessToken);
 
       navigate(routes.root);
@@ -47,6 +48,7 @@ const LoginForm = () => {
         />
         <ControlledInput
           name={loginFormFields.password}
+          type={'password'}
           label={t("login.password")}
         />
         <Button
@@ -89,7 +91,7 @@ const LoginFormWrapper = styled.div`
   grid-template-rows: auto;
   grid-column: 1;
   grid-row-gap: 0.5rem;
-  h2 {
+  h3 {
     text-align: center;
   }
 `;
