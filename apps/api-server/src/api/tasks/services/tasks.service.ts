@@ -2,33 +2,43 @@ import { ITasksService } from "./tasks.service.interface";
 import { UpdateTaskRequest } from "../dto/request/update-task/update-task.request";
 import { AppPromise } from "../../../lib/types/app-result";
 import { CreateTaskRequest } from "../dto/request/create-task/create-task.request";
-import { TaskResponse } from "../dto/response/task/task.response";
+import {
+  mapTaskToTaskResponse,
+  TaskResponse,
+} from "../dto/response/task/task.response";
 import { GetTaskListQueryRequest } from "../dto/request/get-task-list/get-task-list.request";
 import { TaskListResponse } from "../dto/response/task-list/task-list.response";
-import { Failure, Success } from "result";
-import { BadRequestException } from "../../../lib/exceptions/bad-request.exception";
+import {Failure, Success} from "result";
 import { TaskPriority } from "../../../lib/utils/enum/task-priority.enum";
 import { ITask } from "../../../config/db/schemas/task.schema";
+import { ITaskRepository } from "../repository/task/task.repository.interface";
+import TaskMongoRepository from "../repository/task/task.mongo.repository";
 
 class TasksService implements ITasksService {
+  constructor(private taskRepository: ITaskRepository) {
+    this.taskRepository = taskRepository;
+  }
   public async createTask(
     createTaskRequest: CreateTaskRequest,
+    userId: string,
   ): AppPromise<TaskResponse> {
-    // try catch around repo
-
-    return Success.create({
-      id: "123",
-      description: "des",
-      done: false,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      priority: TaskPriority.Low,
-      ...createTaskRequest,
+    const createdTaskResult = await this.taskRepository.createTask({
+      title: createTaskRequest.title,
+      description: createTaskRequest.description || "",
+      priority: createTaskRequest.priority || TaskPriority.High,
+      user: userId,
     });
+
+    if (createdTaskResult.isSuccess()) {
+      return Success.create(mapTaskToTaskResponse(createdTaskResult.value));
+    }
+
+    // TODO: Map to meaningful error instead of rethrowing - bad practices
+    return Failure.create(createdTaskResult.error);
   }
 
   public async deleteTask(taskId: string): AppPromise<Promise<void>> {
-    const taskResult = await this.getTaskById(taskId);
+    const taskResult = await this.taskRepository.deleteTask(taskId);
 
     if (taskResult.isFailure()) {
       // We want to throw same error
@@ -40,39 +50,48 @@ class TasksService implements ITasksService {
   }
 
   public async getTask(taskId: string): AppPromise<TaskResponse> {
-    const taskResult = await this.getTaskById(taskId);
-
-    if (taskResult.isFailure()) {
-      // We want to throw same error
-      return taskResult;
-    }
-
-    return taskResult;
+    return this.getTaskById(taskId);
   }
 
   public async getTasks(
     taskFilters: GetTaskListQueryRequest,
+    userId: string,
   ): AppPromise<TaskListResponse> {
-    if (taskFilters.priority === TaskPriority.Low) {
-      return Success.create({
-        count: 0,
-        items: [],
+    const query: Partial<ITask> = { user: userId }; // Always filter by user
+
+    if (taskFilters.title) {
+      query.title = new RegExp(taskFilters.title, "i"); // Case-insensitive substring match
+    }
+    if (taskFilters.createdAt) {
+      query.createdAt = taskFilters.createdAt;
+    }
+
+    if (typeof taskFilters.done !== "undefined") {
+      query.done = taskFilters.done;
+    }
+
+    if (taskFilters.priority) {
+      query.priority = taskFilters.priority;
+    }
+
+    // TODO: add logic for custom sort field, default sort field if not provided
+    const sortField = "createdAt";
+
+    const results =
+      await this.taskRepository.findAllTaskByUserIdAndFilterPageable(query, {
+        sortField,
+        direction: taskFilters.direction || "desc",
+        limit: taskFilters.limit || 10,
+        offset: taskFilters.offset || 0,
       });
+
+    if (!results.isSuccess()) {
+      throw results.error;
     }
 
     return Success.create({
-      count: 1,
-      items: [
-        {
-          id: "123",
-          description: "des",
-          done: false,
-          title: "asfas",
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          priority: TaskPriority.Low,
-        },
-      ],
+      count: results.value.count,
+      items: results.value.items.map(mapTaskToTaskResponse),
     });
   }
 
@@ -87,30 +106,24 @@ class TasksService implements ITasksService {
       return taskResult;
     }
 
-    // update entity
+    await this.taskRepository.updateTask(taskId, {
+      ...taskResult.value,
+      ...updateTaskRequest,
+    });
 
-    return Success.create({ ...taskResult.value, ...updateTaskRequest });
+    return this.getTaskById(taskId);
   }
 
   private async getTaskById(taskId: string): AppPromise<ITask> {
-    if (taskId === "1") {
-      return Failure.create(
-        new BadRequestException(
-          `Resource task with id: ${taskId} was not found`,
-        ),
-      );
+    const taskResult = await this.taskRepository.findTaskByTaskId(taskId);
+
+    if (taskResult.isFailure()) {
+      // We want to throw same error -
+      return Failure.create(taskResult.error);
     }
 
-    return Success.create({
-      _id: "123",
-      description: "des",
-      done: false,
-      title: "asfas",
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      priority: TaskPriority.Low,
-    });
+    return Success.create(mapTaskToTaskResponse(taskResult.value));
   }
 }
 
-export default new TasksService();
+export default TasksService;

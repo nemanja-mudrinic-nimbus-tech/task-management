@@ -1,5 +1,5 @@
 import { getTaskListQueryRequestSchema } from "./get-task-list.request";
-import {TaskPriority} from "../../../../../lib/utils/enum/task-priority.enum";
+import { TaskPriority } from "../../../../../lib/utils/enum/task-priority.enum";
 
 describe("getTaskListQueryRequestSchema", () => {
   it("should validate correct data", () => {

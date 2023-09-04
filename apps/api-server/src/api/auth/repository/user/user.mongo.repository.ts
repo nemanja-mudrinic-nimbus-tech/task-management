@@ -2,7 +2,7 @@ import { MongoRepository } from "../../../../config/db/repository/mongo.reposito
 import { IUser, User } from "../../../../config/db/schemas/user.schema";
 import { IUserRepository } from "./user.repository.interface";
 import { AppPromise } from "../../../../lib/types/app-result";
-import { Failure, Success } from "result";
+import { Failure, Success } from "packages/result";
 import { BadRequestException } from "../../../../lib/exceptions/bad-request.exception";
 
 class UserMongoRepository
