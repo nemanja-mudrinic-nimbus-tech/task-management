@@ -2,6 +2,13 @@
   "login": {
     "welcome": "Welcome to Task Management",
     "email": "Email",
+    "password": "Password",
+    "loginBtn": "Login"
+  },
+  "register": {
+    "registerBtn": "Register",
+    "welcome": "Sign up for Task Management",
+    "email": "Email",
     "password": "Password"
   },
   "error": {

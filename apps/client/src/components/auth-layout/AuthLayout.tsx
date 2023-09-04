@@ -1,4 +1,5 @@
-import { FC, PropsWithChildren } from "react";
+// @ts-ignore
+import React, { FC, PropsWithChildren } from "react";
 import styled from "styled-components";
 
 const AuthLayout: FC<PropsWithChildren<{}>> = ({ children }) => {
@@ -14,6 +15,7 @@ const AuthPageContainer = styled.div`
   display: grid;
 
   .form-wrapper {
+    min-width: 35%;
     justify-self: center;
     align-self: center;
   }

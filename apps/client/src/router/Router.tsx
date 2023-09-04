@@ -1,3 +1,5 @@
+// @ts-ignore
+import React from "react";
 import {
   createBrowserRouter,
   createRoutesFromElements,
@@ -11,6 +13,7 @@ import Dashboard from "../pages/dashboard/Dashboard.tsx";
 import Error404 from "../pages/error/error404/Error404.tsx";
 import ProtectedRoute from "../components/protected-route/ProtectedRoute.tsx";
 import AuthLayout from "../components/auth-layout/AuthLayout.tsx";
+
 export const router = createBrowserRouter(
   createRoutesFromElements(
     <>
