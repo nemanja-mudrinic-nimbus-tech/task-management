@@ -9,7 +9,7 @@ import { useTranslation } from "react-i18next";
 import { useAuth } from "../../hooks/use-auth/useAuth.ts";
 import { useAppState } from "../../global-state/zustand.ts";
 import { FilterMatchMode } from "primereact/api";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "../../api/apiClient.ts";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
@@ -51,7 +51,7 @@ const Dashboard: FC = () => {
     queryFn: () =>
       api.tasks.getApiV1Tasks(
         10,
-          (lazyState.page - 1) * 10,
+        (lazyState.page - 1) * 10,
         "asc",
         lazyState.filters.title.value || undefined,
         undefined,
@@ -76,6 +76,20 @@ const Dashboard: FC = () => {
   }, [lazyState]);
 
   const [statuses] = useState(["Low", "Medium", "High"]);
+
+  const queryClient = useQueryClient();
+
+  const deleteMutation = useMutation({
+    mutationFn: (taskId: string) => {
+      return api.tasks.deleteApiV1Tasks(taskId!);
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
+        queryKey: ["tasks", user!.id],
+        refetchType: "active",
+      });
+    },
+  });
 
   // @ts-ignore
   const statusRowFilterTemplate = (options) => {
@@ -115,7 +129,15 @@ const Dashboard: FC = () => {
 
   // @ts-ignore
   const actionsTemplate = (data): React.ReactNode => {
-    return <Button label={"Edit"} onClick={() => setTaskId(data.id)} />;
+    return (
+      <div style={{ display: "grid", gridGap: "0.25rem" }}>
+        <Button label={"Edit"} onClick={() => setTaskId(data.id)} />
+        <Button
+          label={"Delete"}
+          onClick={() => deleteMutation.mutate(data.id)}
+        />
+      </div>
+    );
   };
 
   const [taskId, setTaskId] = useState<string | undefined>(undefined);
