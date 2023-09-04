@@ -65,7 +65,7 @@ class TasksService implements ITasksService {
       query.createdAt = taskFilters.createdAt;
     }
 
-    if (typeof taskFilters.done !== "undefined") {
+    if (taskFilters.done != undefined) {
       query.done = taskFilters.done;
     }
 
@@ -75,7 +75,7 @@ class TasksService implements ITasksService {
 
     // TODO: add logic for custom sort field, default sort field if not provided
     const sortField = "createdAt";
-
+    console.log(query);
     const results =
       await this.taskRepository.findAllTaskByUserIdAndFilterPageable(query, {
         sortField,

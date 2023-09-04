@@ -9,6 +9,7 @@ type ControlledInputProps = {
   className?: string;
   disabled?: boolean;
   defaultValue?: string;
+  type?: "text" | "password";
 };
 
 const ControlledInput: FC<ControlledInputProps> = ({
@@ -16,6 +17,7 @@ const ControlledInput: FC<ControlledInputProps> = ({
   label,
   disabled = false,
   defaultValue = "",
+  type = "text",
 }) => {
   const { control } = useFormContext();
   return (
@@ -29,6 +31,7 @@ const ControlledInput: FC<ControlledInputProps> = ({
           value={field.value}
           disabled={disabled}
           placeholder={label}
+          type={type}
           onChange={(event) => field.onChange(event)}
           id={name}
         />

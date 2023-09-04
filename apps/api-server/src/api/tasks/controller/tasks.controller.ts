@@ -41,7 +41,7 @@ router.get(
         throw getTaskResult.error;
       }
 
-      res.status(204).send(getTaskResult.value);
+      res.status(200).send(getTaskResult.value);
     },
     { params: idPathRequestSchema },
   ),
