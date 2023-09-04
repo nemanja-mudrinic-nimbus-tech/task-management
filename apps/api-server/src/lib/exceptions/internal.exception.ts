@@ -1,4 +1,4 @@
-import { Severity } from "../utils/enum/severity";
+import { Severity } from "../utils/enum/severity.enum";
 
 export abstract class InternalException extends Error {
   response: string;

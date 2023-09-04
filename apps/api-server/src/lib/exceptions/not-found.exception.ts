@@ -1,5 +1,5 @@
 import { InternalException } from "./internal.exception";
-import { Severity } from "../utils/enum/severity";
+import { Severity } from "../utils/enum/severity.enum";
 
 export class NotFoundException extends InternalException {
     // TODO: Pass an object instead of this

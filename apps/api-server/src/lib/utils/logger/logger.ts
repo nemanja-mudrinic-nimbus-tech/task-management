@@ -1,6 +1,6 @@
 import { AppRequest } from "../../types/request";
 import { InternalException } from "../../exceptions/internal.exception";
-import { Severity } from "../enum/severity";
+import { Severity } from "../enum/severity.enum";
 
 export const logEvent = (
   message: string,
@@ -16,7 +16,7 @@ export const logEvent = (
     message,
     severity: context?.severity,
     resource: context?.resource,
-    meta: meta && Object.keys(meta || {}).length > 0 ? exports : undefined,
+    meta: meta && Object.keys(meta || {}).length > 0 ? meta : undefined,
     requestId: context?.request?.requestId || meta?.requestId || undefined,
   };
   if (context.exception) {

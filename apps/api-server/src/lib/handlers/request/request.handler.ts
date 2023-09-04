@@ -3,7 +3,7 @@ import { getClientIp } from "request-ip";
 
 import { AppRequest } from "../../types/request";
 import { makeId } from "../../utils/uuid/uuid";
-import { Severity } from "../../utils/enum/severity";
+import { Severity } from "../../utils/enum/severity.enum";
 import { logEvent } from "../../utils/logger/logger";
 
 export const requestHandler = (
