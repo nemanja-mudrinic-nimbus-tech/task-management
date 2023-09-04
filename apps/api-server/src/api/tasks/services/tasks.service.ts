@@ -27,7 +27,7 @@ class TasksService implements ITasksService {
       priority: createTaskRequest.priority || TaskPriority.High,
       userId,
     });
-    console.log(createdTaskResult);
+
     if (createdTaskResult.isSuccess()) {
       return Success.create(mapTaskToTaskResponse(createdTaskResult.value));
     }

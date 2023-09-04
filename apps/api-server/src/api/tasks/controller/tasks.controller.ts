@@ -21,7 +21,6 @@ import {
 } from "../../../lib/dto/request/id-path.request";
 import TasksService from "../services/tasks.service";
 import TaskMongoRepository from "../repository/task/task.mongo.repository";
-import { ROUTE_API_V1 } from "../../../lib/utils/routes/routes";
 
 const router = Router({ mergeParams: true });
 
@@ -104,7 +103,6 @@ router.post(
       );
 
       if (createTaskResult.isFailure()) {
-        console.log("zxv");
         throw createTaskResult.error;
       }
 
@@ -126,7 +124,7 @@ router.get(
         req.query,
         "64f54bb33bde1ead416ffca0",
       );
-      console.log(getTasksResult)
+
       if (getTasksResult.isFailure()) {
         throw getTasksResult.error;
       }

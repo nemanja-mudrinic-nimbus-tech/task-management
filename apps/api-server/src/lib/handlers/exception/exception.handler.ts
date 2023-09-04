@@ -13,7 +13,6 @@ export const errorHandler = (
   res: Response,
   _: NextFunction,
 ) => {
-  console.log('ov')
   // check status of error
   logEvent("error", undefined, {
     exception: err,

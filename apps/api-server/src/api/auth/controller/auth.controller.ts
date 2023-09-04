@@ -1,12 +1,21 @@
 import { NextFunction, Request, Response, Router } from "express";
 
-import authService from "../services/auth.service";
 import { asyncHandler } from "../../../lib/handlers/async-handler/async.handler";
-import { RegistrationRequest } from "../dto/request/registration/registration.request";
+import {
+  RegistrationRequest,
+  registrationRequestSchema,
+} from "../dto/request/registration/registration.request";
 import { LoginResponse } from "../dto/response/login/login.response";
-import { LoginRequest } from "../dto/request/login/login.request";
+import {
+  LoginRequest,
+  loginRequestSchema,
+} from "../dto/request/login/login.request";
+import AuthService from "../services/auth.service";
+import UserMongoRepository from "../repository/user/user.mongo.repository";
 
 const router = Router({ mergeParams: true });
+
+const authService = new AuthService(UserMongoRepository);
 
 router.post(
   "/auth/registration",
@@ -23,8 +32,9 @@ router.post(
         throw signUpResult.error;
       }
 
-      res.status(201);
+      res.status(201).send();
     },
+    { body: registrationRequestSchema },
   ),
 );
 
@@ -44,6 +54,7 @@ router.post(
 
       res.status(200).send(signInResult.value);
     },
+    { body: loginRequestSchema },
   ),
 );
 
