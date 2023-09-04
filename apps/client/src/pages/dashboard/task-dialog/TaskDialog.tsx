@@ -9,8 +9,9 @@ import ControlledForm from "../../../components/form/controlled-form/controlled-
 import styled from "styled-components";
 import { Button } from "primereact/button";
 import { useFormContext } from "react-hook-form";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "../../../api/apiClient.ts";
+import { useAuth } from "../../../hooks/use-auth/useAuth.ts";
 
 type Props = {
   taskId: string | undefined;
@@ -27,21 +28,32 @@ const TaskForm: FC<{
     getValues,
     setValue,
   } = useFormContext();
+  const { user } = useAuth();
 
   const mutationCreate = useMutation({
     mutationFn: (data: FormData) => {
       return api.tasks.postApiV1Tasks(data);
     },
-    onSuccess: () => {
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
+        queryKey: ["tasks", user!.id],
+        refetchType: "active",
+      });
       onClose();
     },
   });
+
+  const queryClient = useQueryClient();
 
   const mutationEdit = useMutation({
     mutationFn: (data: FormData) => {
       return api.tasks.patchApiV1Tasks(taskId!, data);
     },
-    onSuccess: () => {
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
+        queryKey: ["tasks", user!.id],
+        refetchType: "active",
+      });
       onClose();
     },
   });

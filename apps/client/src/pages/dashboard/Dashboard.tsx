@@ -47,19 +47,12 @@ const Dashboard: FC = () => {
   } = useQuery({
     // TODO optimize cachcing
     cacheTime: 0,
-    queryKey: [
-      "tasks",
-      user!.id,
-      ...Object.keys(lazyState.filters).map(
-        // @ts-ignore
-        (key) => lazyState.filters[key].value,
-      ),
-    ],
+    queryKey: ["tasks", user!.id],
     queryFn: () =>
       api.tasks.getApiV1Tasks(
         10,
-        lazyState.page * 10,
-        "desc",
+          (lazyState.page - 1) * 10,
+        "asc",
         lazyState.filters.title.value || undefined,
         undefined,
         lazyState.filters.done.value || undefined,

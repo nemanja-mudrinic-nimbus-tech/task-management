@@ -5,11 +5,11 @@ import { Severity } from "../../lib/utils/enum/severity.enum";
 export const openDbConnection = async () => {
   try {
     await mongoose.connect(
-      `mongodb://${process.env.MONGO_HOST}:${process.env.MONGO_PORT}`,
+      `mongodb://${process.env.MONGO_HOST || "localhost"}:${
+        process.env.MONGO_PORT || "27017"
+      }`,
       {
-        dbName: process.env.MONGO_DB,
-        user: process.env.MONGO_USER,
-        pass: process.env.MONGO_PASSWORD,
+        dbName: process.env.MONGO_DB || "task-db",
       },
     );
 

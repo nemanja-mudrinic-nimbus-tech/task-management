@@ -3,13 +3,15 @@
     "welcome": "Welcome to Task Management",
     "email": "Email",
     "password": "Password",
-    "loginBtn": "Login"
+    "loginBtn": "Login",
+    "registerBtn": "Register"
   },
   "register": {
     "registerBtn": "Register",
     "welcome": "Sign up for Task Management",
     "email": "Email",
-    "password": "Password"
+    "password": "Password",
+    "loginBtn": "Login"
   },
   "dashboard": {
     "createTask": "New Task",

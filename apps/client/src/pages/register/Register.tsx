@@ -46,6 +46,7 @@ const RegisterForm = () => {
           label={t("register.email")}
         />
         <ControlledInput
+          type={"password"}
           name={registerFormFields.password}
           label={t("register.password")}
         />

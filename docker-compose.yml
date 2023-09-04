@@ -1,24 +1,20 @@
 version: "3"
 
 services:
-#  TODO: setup internal docker containers
-#  app:
-#    container_name: task-app
-#    build:
-#      context: apps/api-server
-#      dockerfile: apps/api-server/Dockerfile
-#    environment:
-#      - APP_PORT=3000
-#    ports:
-#      - "3000:${APP_PORT}"
+  #  TODO: setup internal docker containers
+  #  app:
+  #    container_name: task-app
+  #    build:
+  #      context: apps/api-server
+  #      dockerfile: apps/api-server/Dockerfile
+  #    environment:
+  #      - APP_PORT=3000
+  #    ports:
+  #      - "3000:${APP_PORT}"
 
   mongo_db:
     container_name: task-db
     image: mongo:latest
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=task-dev
-      - MONGO_INITDB_ROOT_PASSWORD=SuperCoolPassword123!
-      - MONGO_INITDB_DATABASE=task-db
     ports:
       - "27017:27017"
     volumes:

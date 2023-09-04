@@ -28,7 +28,7 @@ const app = express();
   app.use(responseHandler);
 
   // TODO: Use eventLog
-  app.listen(process.env.APP_PORT, () =>
-    console.log(`Server is running at port ${process.env.APP_PORT}`),
+  app.listen(process.env.APP_PORT || 3000, () =>
+    console.log(`Server is running at port ${process.env.APP_PORT || 3000}`),
   );
 })();
