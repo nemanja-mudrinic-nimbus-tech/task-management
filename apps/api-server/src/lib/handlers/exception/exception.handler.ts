@@ -6,6 +6,8 @@ import { AppRequest } from "../../types/request";
 import { BadRequestException } from "../../exceptions/bad-request.exception";
 import { NotFoundException } from "../../exceptions/not-found.exception";
 import { ValidationException } from "../../exceptions/validation.exception";
+import { UnauthenticatedException } from "../../exceptions/unauthenticated.exception";
+import { UnauthorizedException } from "../../exceptions/unauthorized.exception";
 
 export const errorHandler = (
   err: InternalException,
@@ -24,7 +26,9 @@ export const errorHandler = (
   if (
     err instanceof BadRequestException ||
     err instanceof NotFoundException ||
-    err instanceof ValidationException
+    err instanceof ValidationException ||
+    err instanceof UnauthenticatedException ||
+    err instanceof UnauthorizedException
   ) {
     return res.status(err.status).send({
       message: err.message || err.detail || err.title,

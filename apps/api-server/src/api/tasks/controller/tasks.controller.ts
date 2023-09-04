@@ -21,6 +21,7 @@ import {
 } from "../../../lib/dto/request/id-path.request";
 import TasksService from "../services/tasks.service";
 import TaskMongoRepository from "../repository/task/task.mongo.repository";
+import { AppRequest } from "../../../lib/types/request";
 
 const router = Router({ mergeParams: true });
 
@@ -30,7 +31,7 @@ router.get(
   "/tasks/:id",
   asyncHandler(
     async (
-      req: Request<IdPathRequest, {}, {}, {}>,
+      req: AppRequest<IdPathRequest, {}, {}, {}>,
       res: Response,
       _: NextFunction,
     ) => {
@@ -50,7 +51,7 @@ router.patch(
   "/tasks/:id",
   asyncHandler(
     async (
-      req: Request<IdPathRequest, TaskResponse, UpdateTaskRequest, {}>,
+      req: AppRequest<IdPathRequest, TaskResponse, UpdateTaskRequest, {}>,
       res: Response,
       _: NextFunction,
     ) => {
@@ -73,7 +74,7 @@ router.delete(
   "/tasks/:id",
   asyncHandler(
     async (
-      req: Request<IdPathRequest, {}, {}, {}>,
+      req: AppRequest<IdPathRequest, {}, {}, {}>,
       res: Response,
       _: NextFunction,
     ) => {
@@ -93,13 +94,13 @@ router.post(
   "/tasks",
   asyncHandler(
     async (
-      req: Request<{}, void, CreateTaskRequest, {}>,
+      req: AppRequest<{}, void, CreateTaskRequest, {}>,
       res: Response,
       _: NextFunction,
     ) => {
       const createTaskResult = await taskService.createTask(
         req.body,
-        "64f54bb33bde1ead416ffca0",
+        req.userId!,
       );
 
       if (createTaskResult.isFailure()) {
@@ -116,14 +117,11 @@ router.get(
   "/tasks",
   asyncHandler(
     async (
-      req: Request<{}, TaskListResponse, {}, GetTaskListQueryRequest>,
+      req: AppRequest<{}, TaskListResponse, {}, GetTaskListQueryRequest>,
       res: Response,
       _: NextFunction,
     ) => {
-      const getTasksResult = await taskService.getTasks(
-        req.query,
-        "64f54bb33bde1ead416ffca0",
-      );
+      const getTasksResult = await taskService.getTasks(req.query, req.userId!);
 
       if (getTasksResult.isFailure()) {
         throw getTasksResult.error;

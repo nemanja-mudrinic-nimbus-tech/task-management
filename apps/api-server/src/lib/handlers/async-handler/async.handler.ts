@@ -4,6 +4,7 @@ import {
   ValidatedRequestSchemas,
   validateRequest,
 } from "../validator/zod-validator";
+import {responseHandler} from "../request/request.handler";
 
 export const asyncHandler = (
   fn: Function,
@@ -20,7 +21,7 @@ export const asyncHandler = (
   }
 
   requestPipe.push((req: Request, res: Response, next: NextFunction) =>
-    Promise.resolve(fn(req, res, next)).catch(next),
+    Promise.resolve(fn(req, res, next)).then(next).catch(next),
   );
 
   return [...requestPipe, errorHandler];
