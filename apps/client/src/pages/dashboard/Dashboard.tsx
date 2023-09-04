@@ -14,6 +14,7 @@ import { api } from "../../api/apiClient.ts";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Dropdown } from "primereact/dropdown";
+import TaskDialog from "./task-dialog/TaskDialog.tsx";
 
 const Dashboard: FC = () => {
   const navigate = useNavigate();
@@ -68,14 +69,12 @@ const Dashboard: FC = () => {
 
   // @ts-ignore
   const onPage = (page) => {
-    console.log(page);
     // setOffset()
     setlazyState(page);
   };
 
   // @ts-ignore
   const onFilter = (e: any) => {
-    console.log(e);
     setlazyState({ ...lazyState, ...e });
   };
 
@@ -123,76 +122,81 @@ const Dashboard: FC = () => {
 
   // @ts-ignore
   const actionsTemplate = (data): React.ReactNode => {
-    return <Button label={"Edit"} onClick={() => console.log(data.id)} />;
+    return <Button label={"Edit"} onClick={() => setTaskId(data.id)} />;
   };
 
+  const [taskId, setTaskId] = useState<string | undefined>(undefined);
+
   return (
-    <DashboardLayout>
-      <Navigation>
-        <div className={"header"}>
-          <h3>Hello, {user!.username}</h3>
+    <>
+      <TaskDialog taskId={taskId} onClose={() => setTaskId(undefined)} />
+      <DashboardLayout>
+        <Navigation>
+          <div className={"header"}>
+            <h3>Hello, {user!.username}</h3>
+            <Button
+              label={t("dashboard.createTask") as string}
+              onClick={() => setTaskId("")}
+            />
+          </div>
           <Button
-            label={t("dashboard.createTask") as string}
-            onClick={() => console.log(routes.register)}
+            severity={"danger"}
+            label={t("dashboard.logout") as string}
+            onClick={() => logout()}
           />
-        </div>
-        <Button
-          severity={"danger"}
-          label={t("dashboard.logout") as string}
-          onClick={() => logout()}
-        />
-      </Navigation>
-      <DashboardContent>
-        <DataTable
-          lazy
-          first={lazyState.first}
-          totalRecords={tasks?.count || 0}
-          value={tasks?.items || []}
-          paginator
-          rows={10}
-          dataKey="id"
-          filters={lazyState.filters}
-          filterDisplay="row"
-          loading={isLoading}
-          onFilter={onFilter}
-          onPage={onPage}
-          emptyMessage="No tasks found."
-        >
-          <Column
-            field="title"
-            header="Title"
-            filter
-            filterPlaceholder="Search by title"
-            style={{ minWidth: "12rem" }}
-          />
-          <Column
-            field="description"
-            header="Description"
-            style={{ minWidth: "12rem" }}
-          />
-          <Column
-            filter
-            field="priority"
-            header="Priority"
-            filterElement={statusRowFilterTemplate}
-            style={{ minWidth: "12rem" }}
-          />
-          <Column
-            filter
-            field="done"
-            filterElement={doneRowFilterTemplate}
-            header="Done"
-            style={{ minWidth: "12rem" }}
-          />
-          <Column
-            field="id"
-            header="Actions"
-            style={{ minWidth: "12rem" }}
-            body={actionsTemplate}
-          />
-        </DataTable>
-      </DashboardContent>
-    </DashboardLayout>
+        </Navigation>
+        <DashboardContent>
+          <DataTable
+            lazy
+            first={lazyState.first}
+            totalRecords={tasks?.count || 0}
+            value={tasks?.items || []}
+            paginator
+            rows={10}
+            dataKey="id"
+            filters={lazyState.filters}
+            filterDisplay="row"
+            loading={isLoading}
+            onFilter={onFilter}
+            onPage={onPage}
+            emptyMessage="No tasks found."
+          >
+            <Column
+              field="title"
+              header="Title"
+              filter
+              filterPlaceholder="Search by title"
+              style={{ minWidth: "12rem" }}
+            />
+            <Column
+              field="description"
+              header="Description"
+              style={{ minWidth: "12rem" }}
+            />
+            <Column
+              filter
+              field="priority"
+              header="Priority"
+              filterElement={statusRowFilterTemplate}
+              style={{ minWidth: "12rem" }}
+            />
+            <Column
+              filter
+              field="done"
+              filterElement={doneRowFilterTemplate}
+              header="Done"
+              style={{ minWidth: "12rem" }}
+            />
+            <Column
+              field="id"
+              header="Actions"
+              style={{ minWidth: "12rem" }}
+              body={actionsTemplate}
+            />
+          </DataTable>
+        </DashboardContent>
+      </DashboardLayout>
+    </>
   );
 };
 

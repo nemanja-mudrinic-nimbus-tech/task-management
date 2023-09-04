@@ -63,7 +63,7 @@ class TaskMongoRepository
         .find(query)
         .sort({
           [sortAndPageable.sortField]:
-            sortAndPageable.direction === "desc" ? -1 : 1,
+            sortAndPageable.direction === "asc" ? -1 : 1,
         })
         .skip(sortAndPageable.offset || 0)
         .limit(sortAndPageable.limit || 10),

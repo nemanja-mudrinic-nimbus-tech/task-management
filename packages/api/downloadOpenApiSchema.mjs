@@ -52,7 +52,7 @@ const downloadApiSpec = async () => {
     });
 
     removeHeadersFromData(data, IGNORED_HEADERS);
-    console.log(data, directory);
+
     writeFileSync(`${directory}/openapi.json`, JSON.stringify(data));
   } catch (error) {
     console.error(error);
