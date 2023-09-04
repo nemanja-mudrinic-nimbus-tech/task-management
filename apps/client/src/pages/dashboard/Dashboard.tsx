@@ -121,6 +121,11 @@ const Dashboard: FC = () => {
     );
   };
 
+  // @ts-ignore
+  const actionsTemplate = (data): React.ReactNode => {
+    return <Button label={"Edit"} onClick={() => console.log(data.id)} />;
+  };
+
   return (
     <DashboardLayout>
       <Navigation>
@@ -178,6 +183,12 @@ const Dashboard: FC = () => {
             filterElement={doneRowFilterTemplate}
             header="Done"
             style={{ minWidth: "12rem" }}
+          />
+          <Column
+            field="id"
+            header="Actions"
+            style={{ minWidth: "12rem" }}
+            body={actionsTemplate}
           />
         </DataTable>
       </DashboardContent>
