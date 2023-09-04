@@ -12,10 +12,9 @@ function urlInBlocklist(url: string) {
     url.includes(blocklistUrlSegment),
   );
 }
-
 const config: Partial<OpenAPIConfig> = {
   BASE: environmentVariables.baseApiUrl,
-  VERSION: "3",
+  VERSION: "1",
   // eslint-disable-next-line @typescript-eslint/naming-convention
   TOKEN: async (options) =>
     urlInBlocklist(options.url) ? NO_TOKEN : getAccessToken() ?? NO_TOKEN,
