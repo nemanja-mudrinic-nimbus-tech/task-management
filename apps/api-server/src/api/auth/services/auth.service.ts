@@ -6,12 +6,13 @@ import {
   mapUserToUserLoginResponse,
 } from "../dto/response/login/login.response";
 import { AppPromise } from "../../../lib/types/app-result";
-import { Failure, Success } from "result";
 import { BadRequestException } from "../../../lib/exceptions/bad-request.exception";
 import { IUserRepository } from "../repository/user/user.repository.interface";
 import { hashSync, compareSync } from "bcrypt";
 import jwt from "jsonwebtoken";
 import { IUser } from "../../../config/db/schemas/user.schema";
+import {Success} from "../../../lib/utils/success";
+import {Failure} from "../../../lib/utils/failure";
 
 class AuthService implements IAuthService {
   constructor(private userRepository: IUserRepository) {

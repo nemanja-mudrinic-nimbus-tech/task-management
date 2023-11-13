@@ -8,10 +8,11 @@ import {
 } from "../dto/response/task/task.response";
 import { GetTaskListQueryRequest } from "../dto/request/get-task-list/get-task-list.request";
 import { TaskListResponse } from "../dto/response/task-list/task-list.response";
-import { Failure, Success } from "result";
 import { TaskPriority } from "../../../lib/utils/enum/task-priority.enum";
 import { ITask } from "../../../config/db/schemas/task.schema";
 import { ITaskRepository } from "../repository/task/task.repository.interface";
+import {Success} from "../../../lib/utils/success";
+import {Failure} from "../../../lib/utils/failure";
 
 class TasksService implements ITasksService {
   constructor(private taskRepository: ITaskRepository) {

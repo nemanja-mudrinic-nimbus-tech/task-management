@@ -2,12 +2,13 @@ import { MongoRepository } from "../../../../config/db/repository/mongo.reposito
 import { ITask, Task } from "../../../../config/db/schemas/task.schema";
 import { ITaskRepository } from "./task.repository.interface";
 import { AppPromise } from "../../../../lib/types/app-result";
-import { Failure, Success } from "result";
 import { TaskPriority } from "../../../../lib/utils/enum/task-priority.enum";
 import { BadRequestException } from "../../../../lib/exceptions/bad-request.exception";
 import { ServerInternalException } from "../../../../lib/exceptions/server-internal.exception";
 import mongoose from "mongoose";
 import { User } from "../../../../config/db/schemas/user.schema";
+import {Success} from "../../../../lib/utils/success";
+import {Failure} from "../../../../lib/utils/failure";
 
 class TaskMongoRepository
   extends MongoRepository<ITask>

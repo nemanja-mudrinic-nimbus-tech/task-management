@@ -2,9 +2,10 @@ import { MongoRepository } from "../../../../config/db/repository/mongo.reposito
 import { IUser, User } from "../../../../config/db/schemas/user.schema";
 import { IUserRepository } from "./user.repository.interface";
 import { AppPromise } from "../../../../lib/types/app-result";
-import { Failure, Success } from "result";
 import { BadRequestException } from "../../../../lib/exceptions/bad-request.exception";
 import { ServerInternalException } from "../../../../lib/exceptions/server-internal.exception";
+import {Success} from "../../../../lib/utils/success";
+import {Failure} from "../../../../lib/utils/failure";
 
 class UserMongoRepository
   extends MongoRepository<IUser>
