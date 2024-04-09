@@ -118,7 +118,7 @@ class AuthService implements IAuthService {
         refreshToken: refreshToken,
       });
     } catch (error: any) {
-      return Failure.create<BadRequestException>(new BadRequestException('Refresh token is not in valid format'));
+      return Failure.create<BadRequestException>(new BadRequestException());
     }
   }
 }
