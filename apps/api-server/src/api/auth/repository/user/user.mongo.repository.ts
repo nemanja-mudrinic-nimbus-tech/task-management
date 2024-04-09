@@ -4,7 +4,7 @@ import { IUserRepository } from "./user.repository.interface";
 import { AppPromise } from "../../../../lib/types/app-result";
 import { Failure, Success } from "result";
 import { BadRequestException } from "../../../../lib/exceptions/bad-request.exception";
-import { ServerInternalException } from "../../../../lib/exceptions/server-internal.exception";
+import { DBException } from "../../../../lib/exceptions/db.exception";
 
 class UserMongoRepository
   extends MongoRepository<IUser>
@@ -21,21 +21,23 @@ class UserMongoRepository
       });
 
       return Success.create(createdUser);
-    } catch (error) {
-      return Failure.create(
-        new ServerInternalException((error as Error)?.message || undefined),
-      );
+    } catch (error: any) {
+      return Failure.create<DBException>(new DBException(`${error.message}`));
     }
   }
 
   public async findUserByUsername(username: string): AppPromise<IUser> {
-    const user = await this.model.findOne({ username });
+    try {
+      const user = await this.model.findOne({ username });
 
-    if (!user) {
-      return Failure.create(new BadRequestException("User not found"));
+      if (!user) {
+        return Failure.create(new BadRequestException("User not found"));
+      }
+
+      return Success.create(user);
+    } catch (error: any) {
+      return Failure.create<DBException>(new DBException(`${error.message}`));
     }
-
-    return Success.create(user);
   }
 }
 

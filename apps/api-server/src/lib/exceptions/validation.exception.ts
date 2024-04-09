@@ -6,7 +6,7 @@ export class ValidationException extends InternalException {
     super({
       message: "Validation error",
       detail,
-      code: "validation-error",
+      code: "error.validationError",
       status: 422,
       title: "Validation error",
       severity: Severity.Info,

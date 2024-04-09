@@ -37,6 +37,12 @@ class TasksService implements ITasksService {
   }
 
   public async deleteTask(taskId: string): AppPromise<Promise<void>> {
+    const task = await this.getTaskById(taskId);
+
+    if (task.isFailure()) {
+      return Failure.create(task.error);
+    }
+    
     const taskResult = await this.taskRepository.deleteTask(taskId);
 
     if (taskResult.isFailure()) {
@@ -75,13 +81,15 @@ class TasksService implements ITasksService {
 
     // TODO: add logic for custom sort field, default sort field if not provided
     const sortField = "createdAt";
+    const offset = taskFilters.offset || 0;
+    const limit = taskFilters.limit || 10;
 
     const results =
       await this.taskRepository.findAllTaskByUserIdAndFilterPageable(query, {
         sortField,
         direction: taskFilters.direction || "desc",
-        limit: taskFilters.limit || 10,
-        offset: taskFilters.offset || 0,
+        limit: limit,
+        offset: offset,
       });
 
     if (!results.isSuccess()) {
@@ -89,8 +97,10 @@ class TasksService implements ITasksService {
     }
 
     return Success.create({
-      count: results.value.count,
       items: results.value.items.map(mapTaskToTaskResponse),
+      totalItems: results.value.count,
+      totalPages: Math.ceil(results.value.count / limit),
+      page: Math.floor(offset / limit) + 1,
     });
   }
 

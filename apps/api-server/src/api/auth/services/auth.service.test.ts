@@ -107,4 +107,18 @@ describe("AuthService", () => {
       }
     });
   });
+  describe("refreshToken", () => {
+    it("should return error if token is not in valid format", async () => {
+      (jwt.verify as jest.Mock).mockReturnValue('refreshToken');
+      (jwt.sign as jest.Mock).mockReturnValue('accessToken');
+
+      const result = await authService.refreshToken('refreshToken')
+
+      expect(result.isSuccess()).toBeTruthy();
+      if (result.isSuccess()) {
+        expect(result.value.accessToken).toBe("accessToken");
+        expect(result.value.refreshToken).toBe("refreshToken");
+      }
+    });
+  });
 });

@@ -4,6 +4,7 @@ describe("loginResponseSchema", () => {
   it("should validate correct data", () => {
     const validData = {
       accessToken: "someToken",
+      refreshToken: "refreshToken",
       user: {
         id: "12345",
         username: "johndoe@email.com",
@@ -18,6 +19,7 @@ describe("loginResponseSchema", () => {
   it("should fail validation on incorrect email format", () => {
     const invalidEmailData = {
       accessToken: "someToken",
+      refreshToken: "refreshToken",
       user: {
         id: "12345",
         username: "johndoemail.com",
