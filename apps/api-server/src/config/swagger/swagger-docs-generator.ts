@@ -8,10 +8,12 @@ import { registry } from "./swagger-registry";
 import { registerAuthApi } from "../../api/auth/openapi/auth.openapi";
 import { registerTaskApi } from "../../api/tasks/openapi/task.openapi";
 import { ROUTE_API_V1 } from "../../lib/utils/routes/routes";
+import { registerUserApi } from "../../api/users/openapi/user.openapi";
 
 const getOpenApiDocumentation = () => {
   registerAuthApi();
   registerTaskApi();
+  registerUserApi();
 
   const generator = new OpenApiGeneratorV3(registry.definitions);
 
