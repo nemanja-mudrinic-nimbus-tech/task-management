@@ -14,7 +14,17 @@ export const taskResponseSchema = z
     updatedAt: z.date(),
     priority: z.nativeEnum(TaskPriority),
   })
-  .openapi("TaskResponse");
+  .openapi("TaskResponse", {
+    example: {
+      id: "12345",
+      title: "Task Title",
+      description: "Task Description",
+      done: false,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      priority: TaskPriority.Low,
+    }
+  });
 
 export type TaskResponse = z.infer<typeof taskResponseSchema>;
 

@@ -13,6 +13,7 @@ export const createTaskRequestRequestSchema = z
     example: {
       title: "asc",
       description: "task description",
+      priority: TaskPriority.Low
     },
   });
 
