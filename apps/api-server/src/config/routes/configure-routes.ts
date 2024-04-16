@@ -3,6 +3,7 @@ import { Application, NextFunction, Request, Response, Router } from "express";
 import appRoute from "../../lib/health/health.controller";
 import tasksController from "../../api/tasks/controller/tasks.controller";
 import authController from "../../api/auth/controller/auth.controller";
+import userController from "../../api/users/controller/user.controller";
 
 import { ROUTE_API_V1 } from "../../lib/utils/routes/routes";
 
@@ -13,4 +14,5 @@ export const configureRoutes = (app: Application) => {
   router.use(appRoute);
   router.use(tasksController);
   router.use(authController);
+  router.use(userController);
 };

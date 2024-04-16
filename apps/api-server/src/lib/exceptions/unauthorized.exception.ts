@@ -5,7 +5,7 @@ export class UnauthorizedException extends InternalException {
   constructor() {
     super({
       detail: "Unauthorized",
-      code: "unauthorized-found",
+      code: "error.unauthorizedFound",
       status: 403,
       title: "Unauthorized",
       severity: Severity.Info,

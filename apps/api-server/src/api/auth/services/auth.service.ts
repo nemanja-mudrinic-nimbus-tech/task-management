@@ -12,6 +12,8 @@ import { IUserRepository } from "../repository/user/user.repository.interface";
 import { hashSync, compareSync } from "bcrypt";
 import jwt from "jsonwebtoken";
 import { IUser } from "../../../config/db/schemas/user.schema";
+import { RefreshTokenResponse } from "../dto/response/refresh-token/refresh-token.response";
+import { InternalException } from "src/lib/exceptions/internal.exception";
 
 class AuthService implements IAuthService {
   constructor(private userRepository: IUserRepository) {
@@ -46,13 +48,13 @@ class AuthService implements IAuthService {
     const userResult = await this.getUserByUsername(loginRequest.username);
 
     if (userResult.isFailure()) {
-      return Failure.create(new BadRequestException("bad credentials"));
+      return Failure.create(new BadRequestException("Bad credentials"));
     }
 
     const user = userResult.value;
 
     if (!compareSync(loginRequest.password, user.password)) {
-      return Failure.create(new BadRequestException("bad credentials"));
+      return Failure.create(new BadRequestException("Bad credentials"));
     }
 
     // 1 hour token
@@ -67,9 +69,22 @@ class AuthService implements IAuthService {
       },
     );
 
+    // 1 day token
+    const refreshToken = jwt.sign(
+      {
+        username: user.username,
+        id: user._id,
+      },
+      process.env.JWT_REFRESH_SECRET || "refreshSecret123",
+      {
+        expiresIn: process.env.REFRESH_TOKEN_EXPIRES || "1d",
+      }
+    );
+
     return Success.create({
       user: mapUserToUserLoginResponse(user),
       accessToken,
+      refreshToken,
     });
   }
   private async getUserByUsername(username: string): AppPromise<IUser> {
@@ -79,6 +94,32 @@ class AuthService implements IAuthService {
     }
 
     return Success.create(userResults.value);
+  }
+
+  public async refreshToken(refreshToken: string): AppPromise<RefreshTokenResponse> {
+    try {
+      const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET || "refreshSecret123")
+      const accessToken = jwt.sign(
+        {
+        // @ts-ignore
+        username: decoded.username,
+        // @ts-ignore
+        id: decoded.id,
+        },
+        process.env.JWT_SECRET! || "testSecret123",
+        {
+          expiresIn: "3600s",
+        }
+      );
+      
+      return Success.create({
+        // @ts-ignore
+        accessToken: accessToken,
+        refreshToken: refreshToken,
+      });
+    } catch (error: any) {
+      return Failure.create<BadRequestException>(new BadRequestException());
+    }
   }
 }
 

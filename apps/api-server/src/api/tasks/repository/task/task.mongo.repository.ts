@@ -4,10 +4,10 @@ import { ITaskRepository } from "./task.repository.interface";
 import { AppPromise } from "../../../../lib/types/app-result";
 import { Failure, Success } from "result";
 import { TaskPriority } from "../../../../lib/utils/enum/task-priority.enum";
-import { BadRequestException } from "../../../../lib/exceptions/bad-request.exception";
-import { ServerInternalException } from "../../../../lib/exceptions/server-internal.exception";
 import mongoose from "mongoose";
 import { User } from "../../../../config/db/schemas/user.schema";
+import { DBException } from "../../../../lib/exceptions/db.exception";
+import { NotFoundException } from "../../../../lib/exceptions/not-found.exception";
 
 class TaskMongoRepository
   extends MongoRepository<ITask>
@@ -37,16 +37,18 @@ class TaskMongoRepository
       );
 
       return Success.create(createdTask);
-    } catch (error) {
-      return Failure.create(
-        new ServerInternalException((error as Error)?.message || undefined),
-      );
+    } catch (error: any) {
+      return Failure.create<DBException>(new DBException(`${error.message}`));
     }
   }
 
   async deleteTask(taskId: string): AppPromise<Promise<void>> {
-    await this.model.deleteOne({ _id: taskId });
-    return Success.create(Promise.resolve());
+    try {
+      await this.model.deleteOne({ _id: taskId });
+      return Success.create(Promise.resolve());
+    } catch (error: any) {
+      return Failure.create<DBException>(new DBException(`${error.message}`));
+    }
   }
 
   async findAllTaskByUserIdAndFilterPageable(
@@ -58,38 +60,50 @@ class TaskMongoRepository
       direction: "asc" | "desc";
     },
   ): AppPromise<{ items: ITask[]; count: number }> {
-    const [tasks, count] = await Promise.all([
-      this.model
-        .find(query)
-        .sort({
-          [sortAndPageable.sortField]:
-            sortAndPageable.direction === "asc" ? -1 : 1,
-        })
-        .skip(sortAndPageable.offset || 0)
-        .limit(sortAndPageable.limit || 10),
-      this.model.count(query),
-    ]);
-
-    return Success.create({
-      items: tasks,
-      count,
-    });
+    try {
+      const [tasks, count] = await Promise.all([
+        this.model
+          .find(query)
+          .sort({
+            [sortAndPageable.sortField]:
+              sortAndPageable.direction === "asc" ? -1 : 1,
+          })
+          .skip(sortAndPageable.offset || 0)
+          .limit(sortAndPageable.limit || 10),
+        this.model.count(query),
+      ]);
+  
+      return Success.create({
+        items: tasks,
+        count,
+      });
+    } catch (error: any) {
+      return Failure.create<DBException>(new DBException(`${error.message}`));
+    }
   }
 
   async findTaskByTaskId(taskId: string): AppPromise<ITask> {
-    const task = await this.model.findById(taskId);
+    try {
+      const task = await this.model.findById(taskId);
 
-    if (!task) {
-      return Failure.create(new BadRequestException("Task was not found"));
+      if (!task) {
+        return Failure.create(new NotFoundException(`Task with id = ${taskId} does not exist.`));
+      }
+
+      return Success.create(task);
+    } catch (error: any) {
+      return Failure.create<DBException>(new DBException(`${error.message}`));
     }
-
-    return Success.create(task);
   }
 
   async updateTask(taskId: string, task: ITask): AppPromise<ITask> {
-    await this.model.updateOne({ _id: taskId }, task);
+    try {
+      await this.model.updateOne({ _id: taskId }, task);
 
-    return this.findTaskByTaskId(taskId);
+      return this.findTaskByTaskId(taskId);
+    } catch (error: any) {
+      return Failure.create<DBException>(new DBException(`${error.message}`));
+    }
   }
 }
 

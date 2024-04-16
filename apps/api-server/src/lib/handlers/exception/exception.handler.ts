@@ -8,6 +8,7 @@ import { NotFoundException } from "../../exceptions/not-found.exception";
 import { ValidationException } from "../../exceptions/validation.exception";
 import { UnauthenticatedException } from "../../exceptions/unauthenticated.exception";
 import { UnauthorizedException } from "../../exceptions/unauthorized.exception";
+import { DBException } from "../../../lib/exceptions/db.exception";
 
 export const errorHandler = (
   err: InternalException,
@@ -28,7 +29,8 @@ export const errorHandler = (
     err instanceof NotFoundException ||
     err instanceof ValidationException ||
     err instanceof UnauthenticatedException ||
-    err instanceof UnauthorizedException
+    err instanceof UnauthorizedException ||
+    err instanceof DBException
   ) {
     return res.status(err.status).send({
       message: err.message || err.detail || err.title,
@@ -40,6 +42,6 @@ export const errorHandler = (
 
   return res.send({
     message: "Something went wrong",
-    code: "server-error",
+    code: "serverError",
   });
 };

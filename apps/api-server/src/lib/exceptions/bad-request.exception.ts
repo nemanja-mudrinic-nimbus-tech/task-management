@@ -11,7 +11,7 @@ export class BadRequestException extends InternalException {
   ) {
     super({
       detail,
-      code: code || "bad-request",
+      code: code || "error.badRequest",
       status: 400,
       title,
       severity,

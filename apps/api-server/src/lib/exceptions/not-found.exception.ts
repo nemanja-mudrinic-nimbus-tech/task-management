@@ -11,7 +11,7 @@ export class NotFoundException extends InternalException {
   ) {
     super({
       detail,
-      code: code || "not-found",
+      code: code || "error.notFound",
       status: 404,
       title,
       severity,

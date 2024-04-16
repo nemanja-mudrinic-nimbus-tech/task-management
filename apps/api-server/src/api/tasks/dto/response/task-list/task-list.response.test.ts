@@ -15,7 +15,9 @@ describe("taskListResponseSchema", () => {
           priority: TaskPriority.High,
         },
       ],
-      count: 1,
+      totalItems: 1,
+      totalPages: 1,
+      page: 1
     };
 
     const validationResult = taskListResponseSchema.safeParse(validData);
@@ -35,7 +37,9 @@ describe("taskListResponseSchema", () => {
           priority: TaskPriority.High,
         },
       ],
-      count: 1,
+      totalItems: 1,
+      totalPages: 1,
+      page: 1
     };
 
     const validationResult = taskListResponseSchema.safeParse(invalidTaskData);

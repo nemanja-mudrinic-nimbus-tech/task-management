@@ -31,3 +31,13 @@ export const authenticateToken = (
     return next();
   }
 };
+
+export const getTokenId = (token: string) => {
+  try {
+    const decodedToken = jwt.verify(token, process.env.JWT_SECRET || "testSecret123");
+    return decodedToken.id as string;
+  } catch (error) {
+    console.error('Error decoding token:', error);
+    return null;
+  }
+};

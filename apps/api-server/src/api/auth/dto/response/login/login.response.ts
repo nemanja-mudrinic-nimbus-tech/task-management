@@ -6,6 +6,7 @@ extendZodWithOpenApi(z);
 export const loginResponseSchema = z
   .object({
     accessToken: z.string(),
+    refreshToken: z.string(),
     user: z.object({
       id: z.string(),
       username: z.string().email({ message: "Enter valid email" }),

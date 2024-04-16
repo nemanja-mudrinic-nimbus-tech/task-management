@@ -3,6 +3,7 @@ import TasksService from "./tasks.service";
 import { TaskPriority } from "../../../lib/utils/enum/task-priority.enum";
 import { Failure, Success } from "result";
 import { ITaskRepository } from "../repository/task/task.repository.interface";
+import { NotFoundException } from "../../../lib/exceptions/not-found.exception";
 
 // Mock the task repository
 jest.mock("../repository/task/task.mongo.repository");
@@ -42,6 +43,10 @@ describe("TasksService", () => {
 
   describe("deleteTask", () => {
     it("should successfully delete a task", async () => {
+      mockedTaskRepository.findTaskByTaskId.mockResolvedValueOnce(
+        Success.create(Promise.resolve()),
+      );
+
       mockedTaskRepository.deleteTask.mockResolvedValueOnce(
         Success.create(Promise.resolve()),
       );
@@ -52,15 +57,19 @@ describe("TasksService", () => {
     });
 
     it("should return an error for a non-existent task", async () => {
+      mockedTaskRepository.findTaskByTaskId.mockResolvedValueOnce(
+        Failure.create(new NotFoundException()),
+      );
+
       mockedTaskRepository.deleteTask.mockResolvedValueOnce(
-        Failure.create(new BadRequestException("Not found")),
+        Failure.create(new NotFoundException()),
       );
 
       const result = await tasksService.deleteTask("1");
 
       expect(result.isFailure()).toBeTruthy();
       if (result.isFailure()) {
-        expect(result.error).toBeInstanceOf(BadRequestException);
+        expect(result.error).toBeInstanceOf(NotFoundException);
       }
     });
   });
@@ -114,7 +123,7 @@ describe("TasksService", () => {
 
       expect(result.isSuccess()).toBeTruthy();
       if (result.isSuccess()) {
-        expect(result.value.count).toBe(1);
+        expect(result.value.totalItems).toBe(1);
       }
     });
 
@@ -133,7 +142,7 @@ describe("TasksService", () => {
 
       expect(result.isSuccess()).toBeTruthy();
       if (result.isSuccess()) {
-        expect(result.value.count).toBe(0);
+        expect(result.value.totalItems).toBe(0);
       }
     });
   });

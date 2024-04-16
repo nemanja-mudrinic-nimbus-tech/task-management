@@ -12,6 +12,8 @@ import {
 } from "../dto/request/login/login.request";
 import AuthService from "../services/auth.service";
 import UserMongoRepository from "../repository/user/user.mongo.repository";
+import { RefreshTokenResponse } from "../dto/response/refresh-token/refresh-token.response";
+import { RefreshTokenRequest, refreshTokenRequestSchema } from "../dto/request/refresh-token/refresh-token.request";
 
 const router = Router({ mergeParams: true });
 
@@ -55,6 +57,26 @@ router.post(
       res.status(200).send(signInResult.value);
     },
     { body: loginRequestSchema },
+  ),
+);
+
+router.post(
+  "/auth/refresh",
+  asyncHandler(
+    async (
+      req: Request<{}, RefreshTokenResponse, RefreshTokenRequest, {}>,
+      res: Response,
+      next: NextFunction,
+    ) => {
+      const refreshTokenResult = await authService.refreshToken(req.body.refreshToken);
+
+      if (refreshTokenResult.isFailure()) {
+        throw refreshTokenResult.error;
+      }
+
+      res.status(200).send(refreshTokenResult.value);
+    },
+    { body: refreshTokenRequestSchema },
   ),
 );
 
